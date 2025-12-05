@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>14.azv | Блог</title>
+  
+  <link rel="icon" href="icon.png" type="image/png"> 
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap');
+
+    /* --- ГЛОБАЛЬНЫЕ СТИЛИ --- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+   body {
+      font-family: 'Roboto', sans-serif;
+      /* Используем твое фото или заглушку, если файла нет */
+      background: #000 url('1000024225.jpg') no-repeat center center fixed; 
+      background-size: cover;
+      color: #e0e0e0; 
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    
+    /* --- ЦВЕТОВАЯ ПАЛИТРА (SAPPHIRE THEME) --- */
+    :root {
+      --sapphire-dark: #1F51FF; 
+      --sapphire-light: #7AA9FF; 
+      --bg-dark: rgba(10, 10, 10, 0.9);
+      --card-bg: rgba(15, 15, 25, 0.9);
+    }
+    
+    /* --- АНИМАЦИЯ ЗАГРУЗКИ --- */
+    .loader-overlay {
+      display: flex; position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #000; z-index: 9999;
+      justify-content: center; align-items: center; flex-direction: column;
+      transition: opacity 0.8s ease-out, visibility 0.8s;
+    }
+    .loader-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .neon-text {
+      font-family: 'Orbitron', sans-serif; 
+      color: var(--sapphire-dark); 
+      text-shadow: 0 0 20px var(--sapphire-dark); 
+      margin-bottom: 15px; letter-spacing: 2px;
+    }
+    .progress-bar { width: 300px; height: 4px; background: #111; border: 1px solid var(--sapphire-dark); overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: var(--sapphire-dark); box-shadow: 0 0 10px var(--sapphire-dark); }
+
+    /* --- HEADER --- */
+    header {
+      position: fixed; top: 0; width: 100%;
+      background: var(--bg-dark);
+      border-bottom: 1px solid rgba(31,81,255, 0.3); 
+      backdrop-filter: blur(10px); z-index: 1000;
+    }
+    nav {
+      max-width: 1200px; margin: auto; padding: 15px 30px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .logo {
+      font-family: 'Orbitron', sans-serif; font-size: 24px;
+      color: var(--sapphire-dark); text-shadow: 0 0 10px var(--sapphire-dark);
+      letter-spacing: 2px; text-decoration: none;
+    }
+    
+    /* --- LANG SWITCHER --- */
+    .lang-switcher { display: flex; gap: 5px; }
+    .lang-btn {
+      padding: 5px 12px; font-family: 'Orbitron', sans-serif; font-size: 12px;
+      background: transparent; border: 1px solid var(--sapphire-dark);
+      color: var(--sapphire-dark); cursor: pointer; transition: 0.3s;
+    }
+    .lang-btn:hover, .lang-btn.active {
+      background: var(--sapphire-dark); color: #000; box-shadow: 0 0 15px var(--sapphire-dark);
+    }
+
+    /* --- HERO SECTION (BLOG INTRO) --- */
+    #hero {
+      height: 80vh; display: flex; flex-direction: column; justify-content: center;
+      align-items: center; text-align: center; padding: 0 20px;
+      margin-top: 60px;
+    }
+    .content-wrapper { 
+        background: rgba(0, 0, 0, 0.6); 
+        padding: 40px; border-radius: 15px;
+        border: 1px solid rgba(31, 81, 255, 0.3);
+        box-shadow: 0 0 30px rgba(31, 81, 255, 0.15); 
+        max-width: 800px; margin: 0 auto;
+        backdrop-filter: blur(5px);
+    }
+    h1 {
+      font-family: 'Orbitron', sans-serif; font-size: 3.5rem;
+      color: var(--sapphire-dark); text-shadow: 0 0 20px var(--sapphire-light);
+      margin-bottom: 20px; animation: glow 3s infinite alternate;
+    }
+    p.hero-text {
+      font-size: 1.2rem; line-height: 1.6; color: #ccc;
+    }
+    @keyframes glow {
+      from { text-shadow: 0 0 10px var(--sapphire-dark); } 
+      to { text-shadow: 0 0 25px var(--sapphire-dark), 0 0 50px var(--sapphire-dark); }
+    }
+
+    /* --- CATEGORIES SECTION (MAIN CONTENT) --- */
+    section.categories {
+        padding: 50px 20px;
+        max-width: 1200px;
+        margin: auto;
+    }
+    
+    .section-title {
+        font-family: 'Orbitron', sans-serif; text-align: center;
+        color: var(--sapphire-dark); font-size: 2rem; margin-bottom: 50px;
+        text-shadow: 0 0 10px var(--sapphire-dark);
+        border-bottom: 1px solid var(--sapphire-dark);
+        display: inline-block; padding-bottom: 10px;
+        left: 50%; position: relative; transform: translateX(-50%);
+    }
+
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 40px;
+    }
+
+    .category-card {
+        background: var(--card-bg);
+        border: 1px solid rgba(31,81,255, 0.4);
+        border-radius: 20px;
+        overflow: hidden;
+        transition: 0.4s;
+        position: relative;
+        text-decoration: none;
+        display: block;
+        height: 100%;
+    }
+
+    .category-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 0 30px rgba(31,81,255,0.5);
+        border-color: var(--sapphire-light);
+    }
+
+    .card-image-container {
+        height: 250px;
+        overflow: hidden;
+        position: relative;
+        border-bottom: 1px solid var(--sapphire-dark);
+    }
+
+    .card-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: 0.5s;
+    }
+
+    .category-card:hover .card-image-container img {
+        transform: scale(1.1);
+    }
+
+    .card-content {
+        padding: 30px;
+        text-align: center;
+    }
+
+    .card-content h3 {
+        font-family: 'Orbitron', sans-serif;
+        color: var(--sapphire-light);
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+        text-shadow: 0 0 5px var(--sapphire-dark);
+    }
+
+    .card-content p {
+        color: #aaa;
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    .read-btn {
+        margin-top: 20px;
+        display: inline-block;
+        padding: 10px 25px;
+        border: 1px solid var(--sapphire-dark);
+        color: var(--sapphire-dark);
+        font-family: 'Orbitron', sans-serif;
+        border-radius: 5px;
+        transition: 0.3s;
+    }
+
+    .category-card:hover .read-btn {
+        background: var(--sapphire-dark);
+        color: #000;
+        box-shadow: 0 0 15px var(--sapphire-dark);
+    }
+
+    /* --- FOOTER & CONTACTS --- */
+    #contacts {
+        text-align: center;
+        padding: 60px 20px;
+        background: rgba(0,0,0,0.8);
+        border-top: 1px solid var(--sapphire-dark);
+        margin-top: 50px;
+    }
+    .neon-link {
+        color: var(--sapphire-light); text-decoration: none; font-weight: bold;
+        transition: 0.3s;
+    }
+    .neon-link:hover { text-shadow: 0 0 15px var(--sapphire-light); }
+    
+    footer {
+      text-align: center; padding: 20px;
+      background: #000; color: #555; font-size: 12px;
+    }
+
+    /* --- SIDEBAR MENU --- */
+    #branch-btn {
+        position: fixed; bottom: 30px; right: 30px; z-index: 1050;
+        width: 60px; height: 60px; border-radius: 50%;
+        background: var(--sapphire-dark); color: #000; border: none;
+        cursor: pointer; font-family: 'Orbitron', sans-serif; font-weight: bold;
+        box-shadow: 0 0 20px var(--sapphire-dark); transition: 0.3s;
+    }
+    #branch-btn:hover { transform: scale(1.1); box-shadow: 0 0 40px var(--sapphire-dark); }
+    
+    #branch-menu {
+        position: fixed; top: 0; right: 0; width: 320px; height: 100%;
+        background: rgba(5, 5, 10, 0.98); border-left: 2px solid var(--sapphire-dark);
+        z-index: 1040; transform: translateX(100%); transition: 0.4s ease;
+        padding: 40px; padding-top: 100px;
+    }
+    #branch-menu.open { transform: translateX(0); }
+    .branch-link {
+        display: block; padding: 15px; color: #ccc; text-decoration: none;
+        font-family: 'Orbitron', sans-serif; border-bottom: 1px solid rgba(255,255,255,0.1);
+        transition: 0.3s; font-size: 1.1rem;
+    }
+    .branch-link:hover {
+        color: var(--sapphire-dark); padding-left: 25px;
+        text-shadow: 0 0 10px var(--sapphire-dark); border-color: var(--sapphire-dark);
+    }
+
+    /* Animation classes */
+    [data-animate] { opacity: 0; transform: translateY(30px); transition: 0.8s ease; }
+    [data-animate].visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <!-- LOADER -->
+  <div id="system-loader" class="loader-overlay">
+    <div class="loader-content">
+      <h2 class="neon-text">BLOG SYSTEM INIT...</h2>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header>
+    <nav>
+      <a href="#" class="logo">14.azv</a>
+      
+      <!-- LANG SWITCH -->
+      <div class="lang-switcher">
+        <button id="lang-ru" class="lang-btn active">RU</button>
+        <button id="lang-en" class="lang-btn">EN</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="content-wrapper">
+      <h1 data-i18n="hero_title">Блог Творца</h1>
+      <p class="hero-text" data-i18n="hero_subtitle">Добро пожаловать в мой цифровой архив. Здесь я делюсь опытом в монтаже, дизайне и коде.</p>
+    </div>
+  </section>
+
+  <!-- MAIN CATEGORIES -->
+  <section class="categories" data-animate>
+    <h2 class="section-title" data-i18n="cat_title">Категории Блога</h2>
+    
+    <div class="categories-grid">
+      
+      <!-- CARD 1: MONTAGE -->
+      <a href="#montage" class="category-card">
+        <div class="card-image-container">
+            <!-- Заглушка изображения (Монтаж) -->
+            <img src="https://placehold.co/600x400/0a0a1a/1F51FF/png?text=VIDEO+EDITING" alt="Video Editing">
+        </div>
+        <div class="card-content">
+            <h3 data-i18n="cat_montage">Монтаж</h3>
+            <p data-i18n="desc_montage">Уроки по Premiere Pro и After Effects, разборы эффектов и секреты динамичного сторителлинга.</p>
+            <div class="read-btn" data-i18n="btn_read">Перейти</div>
+        </div>
+      </a>
+
+      <!-- CARD 2: PHOTOSHOP -->
+      <a href="#photoshop" class="category-card">
+        <div class="card-image-container">
+            <!-- Заглушка изображения (Фотошоп) -->
+            <img src="https://placehold.co/600x400/0a0a1a/1F51FF/png?text=PHOTOSHOP" alt="Photoshop">
+        </div>
+        <div class="card-content">
+            <h3 data-i18n="cat_ps">Фотошоп</h3>
+            <p data-i18n="desc_ps">Графический дизайн, обработка фото, создание превью и работа со слоями и масками.</p>
+            <div class="read-btn" data-i18n="btn_read">Перейти</div>
+        </div>
+      </a>
+
+      <!-- CARD 3: CODING -->
+      <a href="#coding" class="category-card">
+        <div class="card-image-container">
+            <!-- Заглушка изображения (Код) -->
+            <img src="https://placehold.co/600x400/0a0a1a/1F51FF/png?text=PROGRAMMING" alt="Programming">
+        </div>
+        <div class="card-content">
+            <h3 data-i18n="cat_code">Программирование</h3>
+            <p data-i18n="desc_code">Веб-разработка, скрипты, HTML/CSS эксперименты и мой путь в изучении языков.</p>
+            <div class="read-btn" data-i18n="btn_read">Перейти</div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- CONTACTS -->
+  <section id="contacts" data-animate>
+    <h2 class="section-title" data-i18n="contact_title">Связь</h2>
+    <p>Email: <a href="mailto:alan_zasseev@mail.ru" class="neon-link">alan_zasseev@mail.ru</a></p>
+    <p>Telegram: <a href="https://t.me/vellonchel" class="neon-link">@vellonchel</a></p>
+  </section>
+
+  <footer>
+    © 2025 14.azv Blog System. All rights reserved.
+  </footer>
+
+  <!-- BRANCH SIDEBAR -->
+  <button id="branch-btn">+</button>
+  <div id="branch-menu">
+      <h3 class="neon-text" data-i18n="branch_head">НАВИГАЦИЯ</h3>
+      <a href="#hero" class="branch-link" data-i18n="nav_home">Главная</a>
+      <a href="#contacts" class="branch-link" data-i18n="nav_about">Обо мне</a>
+      <a href="#" class="branch-link" data-i18n="branch_res">Ресурсы</a>
+      <a href="#" class="branch-link" data-i18n="branch_arch">Архив</a>
+  </div>
+
+  <script>
+    /* --- TRANSLATIONS --- */
+    const translations = {
+      ru: {
+        hero_title: 'Блог Творца',
+        hero_subtitle: 'Добро пожаловать в мой цифровой архив. Здесь я делюсь опытом в монтаже, дизайне и коде.',
+        cat_title: 'Категории Блога',
+        cat_montage: 'Монтаж',
+        desc_montage: 'Уроки по Premiere Pro и After Effects, разборы эффектов и секреты динамичного сторителлинга.',
+        cat_ps: 'Фотошоп',
+        desc_ps: 'Графический дизайн, обработка фото, создание превью и работа со слоями и масками.',
+        cat_code: 'Программирование',
+        desc_code: 'Веб-разработка, скрипты, HTML/CSS эксперименты и мой путь в изучении языков.',
+        btn_read: 'Перейти',
+        contact_title: 'Связь',
+        branch_head: 'НАВИГАЦИЯ',
+        nav_home: 'Главная',
+        nav_about: 'Обо мне',
+        branch_res: 'Ресурсы',
+        branch_arch: 'Архив'
+      },
+      en: {
+        hero_title: 'Creator\'s Blog',
+        hero_subtitle: 'Welcome to my digital archive. Here I share experiences in editing, design, and code.',
+        cat_title: 'Blog Categories',
+        cat_montage: 'Video Editing',
+        desc_montage: 'Premiere Pro & After Effects tutorials, VFX breakdowns, and storytelling secrets.',
+        cat_ps: 'Photoshop',
+        desc_ps: 'Graphic design, photo manipulation, thumbnail creation, and mastering layers.',
+        cat_code: 'Programming',
+        desc_code: 'Web development, scripts, HTML/CSS experiments, and my coding journey.',
+        btn_read: 'Explore',
+        contact_title: 'Contact',
+        branch_head: 'NAVIGATION',
+        nav_home: 'Home',
+        nav_about: 'About Me',
+        branch_res: 'Resources',
+        branch_arch: 'Archive'
+      }
+    };
+
+    let currentLang = 'ru';
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) el.textContent = translations[lang][key];
+      });
+      document.getElementById('lang-ru').classList.toggle('active', lang === 'ru');
+      document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+    }
+
+    document.getElementById('lang-ru').addEventListener('click', () => setLanguage('ru'));
+    document.getElementById('lang-en').addEventListener('click', () => setLanguage('en'));
+    setLanguage('ru');
+
+    /* --- SIDEBAR TOGGLE --- */
+    const branchBtn = document.getElementById('branch-btn');
+    const branchMenu = document.getElementById('branch-menu');
+    branchBtn.addEventListener('click', () => {
+        branchMenu.classList.toggle('open');
+        branchBtn.textContent = branchMenu.classList.contains('open') ? '×' : '+';
+    });
+
+    /* --- LOADER --- */
+    window.addEventListener('load', () => {
+        const loader = document.getElementById('system-loader');
+        const fill = document.getElementById('progress-fill');
+        let w = 0;
+        const int = setInterval(() => {
+            w += 2; fill.style.width = w + '%';
+            if (w >= 100) {
+                clearInterval(int);
+                setTimeout(() => loader.classList.add('loader-hidden'), 300);
+            }
+        }, 20);
+    });
+
+    /* --- SCROLL ANIMATION --- */
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) entry.target.classList.add('visible');
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
